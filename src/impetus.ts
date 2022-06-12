@@ -46,7 +46,6 @@ export class Impetus {
     stopCallBack: typeStopCallback | undefined;
     multiplier: number;
     friction: number;
-    initialValues: typeCoordinate | undefined;
     boundX: typeBound | undefined;
     boundY: typeBound | undefined;
     bounce: boolean;
@@ -99,7 +98,6 @@ export class Impetus {
         this.stopCallBack = stop;
         this.multiplier = multiplier;
         this.friction = friction;
-        this.initialValues = initialValues;
         this.bounce = bounce;
         this.stopThreshold = stopThresholdDefault * multiplier;
  
@@ -192,7 +190,9 @@ export class Impetus {
      * @param {Number} val
     */
     setMultiplier(val: number) {
+        // FIX IT. make setter
         this.multiplier = val;
+        //Make setter for stopThreshold and use it here
         this.stopThreshold = stopThresholdDefault * this.multiplier;
      };
 
@@ -202,6 +202,7 @@ export class Impetus {
     * @param { number[] } boundX
     */
     setBoundX(bound: typeBound) {
+        //FIX IT. make setter
         this.boundX = bound;
     };
 
@@ -211,6 +212,7 @@ export class Impetus {
     * @param { number[] } boundY
     */
     setBoundY(bound: typeBound) {
+        //FIX IT. make setter
         this.boundY = bound;
     };
 
@@ -219,24 +221,17 @@ export class Impetus {
     */
     cleanUpRuntimeEvents() {
         // Remove all touch events added during 'onDown' as well.
+        //FIX IT. make class property
         let passiveSupported = getPassiveSupported();
         let passiveParam: object | boolean;
         if (passiveSupported)
             passiveParam = { passive: false };
         else
             passiveParam = false;
-        document.removeEventListener(
-            'touchmove',
-            this.onMove as EventListener,
-            passiveParam
-        );
+        document.removeEventListener('touchmove', this.onMove as EventListener, passiveParam);
         document.removeEventListener('touchend', this.onUp);
         document.removeEventListener('touchcancel', this.stopTracking);
-        document.removeEventListener(
-            'mousemove',
-            this.onMove as EventListener,
-            passiveParam
-            );
+        document.removeEventListener('mousemove', this.onMove as EventListener, passiveParam);
         document.removeEventListener('mouseup', this.onUp);
    }
     /**
@@ -246,18 +241,10 @@ export class Impetus {
         this.cleanUpRuntimeEvents();
 
       // @see https://developers.google.com/web/updates/2017/01/scrolling-intervention
-        document.addEventListener(
-            'touchmove',
-            this.onMove,
-            getPassiveSupported() ? { passive: false } : false
-        );
+        document.addEventListener('touchmove', this.onMove, getPassiveSupported() ? { passive: false } : false);
         document.addEventListener('touchend', this.onUp);
         document.addEventListener('touchcancel', this.stopTracking);
-        document.addEventListener(
-            'mousemove',
-            this.onMove,
-            getPassiveSupported() ? { passive: false } : false
-        );
+        document.addEventListener('mousemove', this.onMove, getPassiveSupported() ? { passive: false } : false);
         document.addEventListener('mouseup', this.onUp);
     }
     /**

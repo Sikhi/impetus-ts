@@ -8,7 +8,6 @@ export class Impetus {
     stopCallBack;
     multiplier;
     friction;
-    initialValues;
     boundX;
     boundY;
     bounce;
@@ -43,7 +42,6 @@ export class Impetus {
         this.stopCallBack = stop;
         this.multiplier = multiplier;
         this.friction = friction;
-        this.initialValues = initialValues;
         this.bounce = bounce;
         this.stopThreshold = stopThresholdDefault * multiplier;
         if (initialValues) {
