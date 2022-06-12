@@ -6,7 +6,8 @@ Goal of this project:
  - code reorganization with new features that come in years of JS and TS maturity
  - make some code beuatyfication
 
-========
+=========
+
 Add momentum to anything. It's like iScroll, except not for scrolling. Supports mouse and touch events.
 
 Check out the demos on the [home page](http://chrisbateman.github.io/impetus).
@@ -40,9 +41,9 @@ Impetus will register itself as an AMD module if it's available.
 	</thead>
 	<tbody>
 		<tr>
-			<th scope="row" align="left"><code>source</code></th>
+			<th scope="row" align="left"><code>source</code>(required)</th>
 			<td><code>HTMLElement</code>|<code>String</code></td>
-			<td>document</td>
+			<td>-</td>
 			<td>Element reference or query string for the target on which to listen for movement.</td>
 		</tr>
 		<tr>
@@ -65,21 +66,21 @@ Impetus will register itself as an AMD module if it's available.
 		</tr>
 		<tr>
 			<th scope="row" align="left"><code>initialValues</code></th>
-			<td><code>[Number, Number]</code></td>
-			<td><code>[0, 0]</code></td>
-			<td>Array of initial <var>x</var> and <var>y</var> values.</td>
+			<td><code>typeCoordinate = { x: number; y: number; }</code></td>
+			<td><code>-</code></td>
+			<td>Initial values of <var>x</var> and <var>y</var>.</td>
 		</tr>
 		<tr>
 			<th scope="row" align="left"><code>boundX</code></th>
-			<td><code>[Number, Number]</code></td>
+			<td><code>typeBound = { min: number; max: number; }</code></td>
 			<td>-</td>
-			<td>Array of low and high values. <var>x</var>-values will remain within these bounds.</td>
+			<td>Low and high values. <var>x</var>-values will remain within these bounds.</td>
 		</tr>
 		<tr>
 			<th scope="row" align="left"><code>boundY</code></th>
-			<td><code>[Number, Number]</code></td>
+			<td><code>typeBound = { min: number; max: number; }</code></td>
 			<td>-</td>
-			<td>Array of low and high values. <var>y</var>-values will remain within these bounds.</td>
+			<td>Low and high values. <var>y</var>-values will remain within these bounds.</td>
 		</tr>
 		<tr>
 			<th scope="row" align="left"><code>bounce</code></th>
@@ -109,19 +110,19 @@ Impetus will register itself as an AMD module if it's available.
 			<td>Re-enable movement processing.</td>
 		</tr>
 		<tr>
-			<th scope="row" align="left"><code>.setMultiplier( &lt;number&gt; )</code></th>
+			<th scope="row" align="left"><code>.setMultiplier( val: number )</code></th>
 			<td>Adjust the <var>multiplier</var> in flight.</td>
 		</tr>
 		<tr>
-			<th scope="row" align="left"><code>.setValues( &lt;number&gt; , &lt;number&gt; )</code></th>
+			<th scope="row" align="left"><code>.setValues( x: number, y: number )</code></th>
 			<td>Adjust the current <var>x</var> and <var>y</var> output values.</td>
 		</tr>
 		<tr>
-			<th scope="row" align="left"><code>.setBoundX( &lt;number[2]&gt; )</code></th>
+			<th scope="row" align="left"><code>.setBoundX( bound: typeBound }&gt; )</code></th>
 			<td>Adjust the X bound</td>
 		</tr>
 		<tr>
-			<th scope="row" align="left"><code>.setBoundY( &lt;number[2]&gt; )</code></th>
+			<th scope="row" align="left"><code>.setBoundY( bound: typeBound )</code></th>
 			<td>Adjust the Y bound</td>
 		</tr>
 		<tr>

@@ -23,9 +23,10 @@ type typeCoordinate = {
 }
 
 type ImpetusConstructorParam = {
-  sourceElement: HTMLElement,
-  updateCallBack: typeUpdateCallback,
-  stopCallBack?: typeStopCallback,
+  source: HTMLElement,
+  sourceId: string,
+  update: typeUpdateCallback,
+  stop?: typeStopCallback,
   multiplier?: number,
   friction?: number,
   initialValues?: typeCoordinate,
@@ -39,41 +40,41 @@ type typeTrackingPoint = {
     time: number
 }
 
-export default class Impetus {
+export class Impetus {
     sourceElement: HTMLElement;
     updateCallBack: typeUpdateCallback;
     stopCallBack: typeStopCallback | undefined;
     multiplier: number;
     friction: number;
-    initialValues: any;
-    boundX: typeBound;
-    boundY: typeBound;
+    initialValues: typeCoordinate | undefined;
+    boundX: typeBound | undefined;
+    boundY: typeBound | undefined;
     bounce: boolean
     paused: boolean = false;
     targetX: number = 0;
     targetY: number = 0;
     stopThreshold: number;
-    pointerId: number | null;
+    pointerId: number | null = null;
     pointerActive: boolean = false;
-    pointerLastX: number;
-    pointerLastY: number;
-    pointerCurrentX: number;
-    pointerCurrentY: number;
+    pointerLastX!: number;
+    pointerLastY!: number;
+    pointerCurrentX!: number;
+    pointerCurrentY!: number;
 //FIX IT. need to make type "List"
-    trackingPoints: typeTrackingPoint[];
+    trackingPoints: typeTrackingPoint[] = [];
     decelerating: boolean = false;
-    decVelX: number;
-    decVelY: number;
-
+    decVelX!: number;
+    decVelY!: number;
 
     ticking: boolean = false;
 
     constructor(argsObject:ImpetusConstructorParam) {
         //deconstructing
         var {
-            sourceElement,
-            updateCallBack,
-            stopCallBack,
+            source,
+            sourceId,
+            update,
+            stop,
             multiplier = 1,
             friction = 0.92,
             initialValues,
@@ -82,21 +83,26 @@ export default class Impetus {
             bounce = true
         } = argsObject;
 
-        this.sourceElement = sourceElement;
-        this.updateCallBack = updateCallBack;
-        this.stopCallBack = stopCallBack;
+        if (!source && typeof sourceId === 'string') {
+            source = document.querySelector(sourceId)!;
+        }
+
+        if (!source) {
+            throw new Error('IMPETUS: source not found.');
+        }
+        if (!update) {
+            throw new Error('IMPETUS: update function not defined.');
+        }        
+
+        this.sourceElement = source;
+        this.updateCallBack = update;
+        this.stopCallBack = stop;
         this.multiplier = multiplier;
         this.friction = friction;
         this.initialValues = initialValues;
         this.bounce = bounce;
         this.stopThreshold = stopThresholdDefault * multiplier;
-        if (!sourceElement) {
-            throw new Error('IMPETUS: source not found.');
-        }
-
-        if (!updateCallBack) {
-            throw new Error('IMPETUS: update function not defined.');
-        }
+ 
         if (initialValues) {
             if (initialValues.x) {
                 this.targetX = initialValues.x;
@@ -113,6 +119,12 @@ export default class Impetus {
         if (boundY) {
             this.boundY = boundY;
         }
+        this.stepDecelAnim = this.stepDecelAnim.bind(this)
+        this.updateAndRender = this.updateAndRender.bind(this);
+
+        this.onDown = this.onDown.bind(this);
+        this.onMove = this.onMove.bind(this);
+        this.onUp = this.onUp.bind(this);
         this.sourceElement.addEventListener('touchstart', this.onDown);
         this.sourceElement.addEventListener('mousedown', this.onDown);
   }
@@ -128,8 +140,9 @@ export default class Impetus {
           this.sourceElement!.removeEventListener('mousedown', this.onDown as EventListener);
         }
         catch(error) {
-          console.log("sourceElement not defined?");
-          throw new Error(error);
+          console.log("ERROR:");
+          console.log(error);
+          throw new Error("sourceElement not defined?");
         }
         this.cleanUpRuntimeEvents();
 
@@ -189,8 +202,7 @@ export default class Impetus {
     * @param { number[] } boundX
     */
     setBoundX(bound: typeBound) {
-        this.boundX.min = bound.min
-        this.boundX.max = bound.max;
+        this.boundX = bound;
     };
 
    /**
@@ -199,8 +211,7 @@ export default class Impetus {
     * @param { number[] } boundY
     */
     setBoundY(bound: typeBound) {
-        this.boundY.min = bound.min;
-        this.boundY.max = bound.max;
+        this.boundY = bound;
     };
 
     /**
@@ -392,7 +403,7 @@ export default class Impetus {
      */
     requestTick() {
         if (!this.ticking) {
-          requestAnimFrame(this.updateAndRender);
+          this.requestAnimFrame.call(window, this.updateAndRender)
         }
         this.ticking = true;
     }
@@ -404,29 +415,31 @@ export default class Impetus {
     checkBounds(restrict?: boolean): { x: number; y: number; inBounds: boolean; } {
         let xDiff = 0;
         let yDiff = 0;
-  
-        if (this.boundX.min !== undefined && this.targetX < this.boundX.min) {
-            xDiff = this.boundX.min - this.targetX;
-        }
-        else
-            if (this.boundX.max !== undefined && this.targetX > this.boundX.max) {
-                xDiff = this.boundX.max - this.targetX;
+        if (this.boundX) {
+            if (this.boundX.min !== undefined && this.targetX < this.boundX.min) {
+                xDiff = this.boundX.min - this.targetX;
             }
-  
-        if (this.boundY.min !== undefined && this.targetY < this.boundY.min) {
-            yDiff = this.boundY.min - this.targetY;
+            else
+                if (this.boundX.max !== undefined && this.targetX > this.boundX.max) {
+                    xDiff = this.boundX.max - this.targetX;
+                }
         }
-        else
-            if (this.boundY.max !== undefined && this.targetY > this.boundY.max) {
-                yDiff = this.boundY.max - this.targetY;
+        if (this.boundY) {
+            if (this.boundY.min !== undefined && this.targetY < this.boundY.min) {
+                yDiff = this.boundY.min - this.targetY;
             }
-  
+            else
+                if (this.boundY.max !== undefined && this.targetY > this.boundY.max) {
+                    yDiff = this.boundY.max - this.targetY;
+                }
+        }
+
         if (restrict) {
           if (xDiff !== 0) {
-            this.targetX = xDiff > 0 ? this.boundX.min : this.boundX.max;
+            this.targetX = xDiff > 0 ? this.boundX!.min : this.boundX!.max;
           }
           if (yDiff !== 0) {
-            this.targetY = yDiff > 0 ? this.boundY.min : this.boundY.max;
+            this.targetY = yDiff > 0 ? this.boundY!.min : this.boundY!.max;
           }
         }
   
@@ -456,7 +469,7 @@ export default class Impetus {
   
         if (Math.abs(this.decVelX) > 1 || Math.abs(this.decVelY) > 1 || !diff.inBounds) {
           this.decelerating = true;
-          requestAnimFrame(this.stepDecelAnim);
+          this.requestAnimFrame.call(window, this.stepDecelAnim);
         }
         else
             if (this.stopCallBack) {
@@ -506,17 +519,17 @@ export default class Impetus {
           } else {
             if (diff.x !== 0) {
               if (diff.x > 0) {
-                this.targetX = this.boundX.min;
+                this.targetX = this.boundX!.min;
               } else {
-                this.targetX = this.boundX.max;
+                this.targetX = this.boundX!.max;
               }
               this.decVelX = 0;
             }
             if (diff.y !== 0) {
               if (diff.y > 0) {
-                this.targetY = this.boundY.min;
+                this.targetY = this.boundY!.min;
               } else {
-                this.targetY = this.boundY.max;
+                this.targetY = this.boundY!.max;
               }
               this.decVelY = 0;
             }
@@ -524,32 +537,34 @@ export default class Impetus {
   
           this.callUpdateCallback();
   
-          requestAnimFrame(this.stepDecelAnim);
+          this.requestAnimFrame.call(window,this.stepDecelAnim);
         } else {
             this.decelerating = false;
             if (this.stopCallBack) {
                 this.stopCallBack(this.sourceElement);
             }
         }
-    }      
+    }
+
+    /**
+    * @see http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+    */
+    requestAnimFrame = (function () {
+        return (
+          window.requestAnimationFrame
+      /*
+      //have assumption that in 2022 we don't need it... but I leave here setTimeout ;)
+          || window.webkitRequestAnimationFrame
+          || window.mozRequestAnimationFrame
+      */
+          || function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+          }
+        );
+      }());
 }
 
-/**
- * @see http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
- */
-const requestAnimFrame = (function () {
-  return (
-    window.requestAnimationFrame
-/*
-//have assumption that in 2022 we don't need it... but I leave here setTimeout ;)
-    || window.webkitRequestAnimationFrame
-    || window.mozRequestAnimationFrame
-*/
-    || function (callback) {
-      window.setTimeout(callback, 1000 / 60);
-    }
-  );
-}());
+
 
 let getPassiveSupported = function() {
   let passiveSupported = false;

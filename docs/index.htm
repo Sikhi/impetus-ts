@@ -196,16 +196,17 @@
 		</div>
 	</footer>
 
-	<script src="impetus.min.js"></script>
-	<script>
+	<script type="module" src="./impetus.min.js"></script>
+	<script type="module">
+		import { Impetus } from "./impetus.min.js"
 	var dotEl = document.getElementById('Dot');
 	var dotParent = dotEl.offsetParent;
 
 	var dotImpetus = new Impetus({
 		source: dotEl,
-		initialValues: [dotParent.offsetWidth/2 - 25, 45],
-		boundX: [0, dotParent.offsetWidth - dotEl.offsetWidth],
-		boundY: [0, dotParent.offsetHeight - dotEl.offsetHeight],
+		initialValues: { x: dotParent.offsetWidth/2 - 25, y: 45 },
+		boundX: {min: 0, max: dotParent.offsetWidth - dotEl.offsetWidth},
+		boundY: {min: 0, max: dotParent.offsetHeight - dotEl.offsetHeight},
 		update: function(x, y) {
 			this.style.left = x + 'px';
 			this.style.top = y + 'px';
@@ -213,7 +214,7 @@
 	});
 
 	new Impetus({
-		source: '#Cube',
+		sourceId: '#Cube',
 		multiplier: 0.7,
 		update: function(x, y) {
 			this.style.transform = this.style.webkitTransform = 'translateZ(-120px) rotateY('+x+'deg) rotateX('+(-y)+'deg)';
