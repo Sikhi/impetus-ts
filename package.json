@@ -1,8 +1,8 @@
 {
-  "name": "impetus",
-  "version": "0.8.8",
+  "name": "impetus-ts",
+  "version": "0.0.1",
   "main": "dist/impetus.js",
-  "homepage": "http://chrisbateman.github.io/impetus/",
+  "homepage": "https://github.com/Sikhi/impetusTS",
   "description": "Add momentum to anything. It's like iScroll, except not for scrolling. Supports mouse and touch events.",
   "scripts": {
     "prebuild": "rm -rf dist && mkdir dist",
@@ -18,10 +18,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:chrisbateman/impetus.git"
+    "url": "git+https://github.com/Sikhi/impetusTS"
   },
   "bugs": {
-    "url": "https://github.com/chrisbateman/impetus/issues"
+    "url": "https://github.com/Sikhi/impetusTS/issues"
   },
   "devDependencies": {
     "babel": "^5.8.23",

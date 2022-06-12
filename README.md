@@ -1,5 +1,12 @@
-Impetus.js
+Impetus.TS
 =========
+Based on original [Impetus.js](http://chrisbateman.github.io/impetus), written by Chris Bateman.
+Goal of this project:
+ - port code to TypeScript
+ - code reorganization with new features that come in years of JS and TS maturity
+ - make some code beuatyfication
+
+========
 Add momentum to anything. It's like iScroll, except not for scrolling. Supports mouse and touch events.
 
 Check out the demos on the [home page](http://chrisbateman.github.io/impetus).
