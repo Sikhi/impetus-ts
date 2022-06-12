@@ -1,9 +1,9 @@
 Impetus.TS
 =========
-Based on original [Impetus.js](http://chrisbateman.github.io/impetus), written by Chris Bateman.
+Based on original [Impetus.js](http://chrisbateman.github.io/impetus), written by Chris Bateman. <br />
 Goal of this project:
  - port code to TypeScript
- - code reorganization with new features that come in years of JS and TS maturity
+ - code reorganisation with new features that come in years of JS and TS maturity
  - make some code beuatyfication
 
 =========

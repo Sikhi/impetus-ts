@@ -49,7 +49,7 @@ export class Impetus {
     initialValues: typeCoordinate | undefined;
     boundX: typeBound | undefined;
     boundY: typeBound | undefined;
-    bounce: boolean
+    bounce: boolean;
     paused: boolean = false;
     targetX: number = 0;
     targetY: number = 0;
